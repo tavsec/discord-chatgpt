@@ -37,7 +37,7 @@ func main() {
 
 	s.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 
-		if m.Author.ID == s.State.User.ID {
+		if m.Author.ID == s.State.User.ID || len(m.Mentions) == 0 || m.Mentions[0].ID != s.State.User.ID {
 			return
 		}
 
