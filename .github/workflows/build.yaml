@@ -9,6 +9,12 @@ jobs:
     build:
 
         runs-on: ubuntu-latest
+        permissions:
+            id-token: write
+            contents: read
+            issues: write
+            pull-requests: write
+            repository-projects: write
         steps:
             - uses: actions/checkout@v3
 
@@ -42,11 +48,11 @@ jobs:
                   tag_name: ${{ github.ref_name }}
                   body: ${{ github.ref_name }}
               env:
-                  GITHUB_TOKEN: ${{ github.token }}
+                  GITHUB_TOKEN: ${{ secrets._GITHUB_TOKEN }}
             -   name: upload linux artifact
                 uses: actions/upload-release-asset@v1
                 env:
-                    GITHUB_TOKEN: ${{ github.token }}
+                    GITHUB_TOKEN: ${{ secrets._GITHUB_TOKEN }}
                 with:
                     upload_url: ${{ steps.create_release.outputs.upload_url }}
                     asset_path: ./chatgpt-bot-${{  github.ref_name }}
