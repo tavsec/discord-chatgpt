@@ -46,7 +46,7 @@ func main() {
 		if err != nil {
 			log.Fatalln(err)
 		}
-		s.ChannelMessageSend(m.ChannelID, answer.Choices[0].Message.Content)
+		_, _ = s.ChannelMessageSendReply(m.ChannelID, answer.Choices[0].Message.Content, m.Reference())
 
 	})
 	s.Identify.Intents = discordgo.IntentsGuildMessages
