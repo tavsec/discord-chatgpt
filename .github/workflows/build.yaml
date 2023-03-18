@@ -1,0 +1,54 @@
+name: Go package
+
+on:
+    push:
+        tags:
+            - '*'
+
+jobs:
+    build:
+
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Set up Go
+              uses: actions/setup-go@v3
+              with:
+                  go-version: 1.19
+
+            - name: Install dependencies
+              run: go get .
+
+            - name: Test
+              run: go test -v ./...
+
+            - name: Build
+              run: go build -o chatgpt-bot-${{  github.ref_name }} -v ./...
+
+            - name: Upload Go binary
+              uses: actions/upload-artifact@v3
+              with:
+                  name: chatgpt-bot-${{  github.ref_name }}
+                  path: chatgpt-bot-${{  github.ref_name }}
+
+            - name: release
+              uses: actions/create-release@v1
+              id: create_release
+              with:
+                  draft: false
+                  prerelease: false
+                  release_name: ${{ steps.version.outputs.version }}
+                  tag_name: ${{ github.ref_name }}
+                  body_path: CHANGELOG.md
+              env:
+                  GITHUB_TOKEN: ${{ github.token }}
+            -   name: upload linux artifact
+                uses: actions/upload-release-asset@v1
+                env:
+                    GITHUB_TOKEN: ${{ github.token }}
+                with:
+                    upload_url: ${{ steps.create_release.outputs.upload_url }}
+                    asset_path: ./chatgpt-bot-${{  github.ref_name }}
+                    asset_name: chatgpt-bot-${{  github.ref_name }}
+                    asset_content_type: application/octet-stream
